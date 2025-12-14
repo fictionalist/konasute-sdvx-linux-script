@@ -6,6 +6,7 @@ function intro() {
     echo "This script will do the following:"
     echo "- If not installed, install 'wine', 'winetricks', 'msitools', and 'curl' through your package manager;"
     echo "- Create a Wine prefix \"Konasute\" and install d3dcompiler_43, d3dcompiler_44, d3dcompiler_46, d3dcompiler47, dxvk, vcrun2010, cjkfonts; and set the audio driver for the prefix to ALSA;"
+    echo "- Registers x86 and x64 versions of dsdmo.dll for the prefix for rendering sound effects in the game;"
     echo "- Create a registry entry on the Wine prefix that points the game it's installation path;"
     echo "- Downloads the Konasute installer from KONAMI through curl, extracts it using msitools' msiextract and places it under \"~/Games/SOUND VOLTEX EXCEED GEAR\". (assuming you are OK with KONAMI's terms of use);"
     echo "- Create a desktop file on \"~/.local/share/applications\" that configures the Konasute MIME protocol to launch the game;"
