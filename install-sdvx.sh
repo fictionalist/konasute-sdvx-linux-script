@@ -101,6 +101,7 @@ Exec=env WINEPREFIX=/home/${user}/.local/share/wineprefixes/Konasute LANG=\"ja_J
 MimeType=x-scheme-handler/konaste.sdvx
 Categories=Game;
 Icon=/home/${user}/Games/SOUND VOLTEX EXCEED GEAR/SOUND VOLTEX EXCEED GEAR.ico" > sdvx.desktop
+    cp sdvx.desktop ~/Desktop
     mv ./sdvx.desktop ~/.local/share/applications
     sudo update-desktop-database
 }
@@ -146,8 +147,10 @@ function setupPipewire() {
     }
 ]" > ~/.config/pipewire/pipewire.conf.d/loopback.conf
 
-    if [[ -x "${command -v systemctl}" ]] ; then
+
+    if [[ -d /run/systemd/system ]] ; then
         systemctl --user restart pipewire.service pipewire-pulse.socket
+        echo "Restarted pipewire."
     else
         echo "It seems your system does not use systemd to be managed. Please restart the pipewire service and pipewire-pulse socket through your system control manager under user mode."
     fi
@@ -159,6 +162,7 @@ function outro() {
     echo "=============================================="
     echo "Be sure to configure SDVX's audio options (オーディオ設定) to use WASAPI Exclusive mode (WASAPI (排他モード)), the buffering mode to timer (タイマー駆動). A suggested initial latency setting/buffer size is of 10ms."
     echo "Depending on your controller, you might have to set up a remap string. Refer to the github page for more details."
+    echo "Remember to change your audio device profile to Pro Audio mode."
     echo "=============================================="
 }
 
