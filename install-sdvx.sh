@@ -4,7 +4,7 @@ function intro() {
     echo "SOUND VOLTEX EXCEED GEAR Konasute installation script"
     echo "=============================================="
     echo "This script will do the following:"
-    echo "- If not installed, install 'wine', 'winetricks', 'msitools' and 'curl' through your package manager;"
+    echo "- If not installed, install 'wine', 'winetricks', 'msitools', and 'curl' through your package manager;"
     echo "- Create a Wine prefix \"Konasute\" and install d3dcompiler_43, d3dcompiler_44, d3dcompiler_46, d3dcompiler47, dxvk, vcrun2010, cjkfonts; and set the audio driver for the prefix to ALSA;"
     echo "- Create a registry entry on the Wine prefix that points the game it's installation path;"
     echo "- Downloads the Konasute installer from KONAMI through curl, extracts it using msitools' msiextract and places it under \"~/Games/SOUND VOLTEX EXCEED GEAR\". (assuming you are OK with KONAMI's terms of use);"
@@ -53,10 +53,16 @@ function downloadKonasute() {
     mkdir /tmp/konasute_sdvx
     cd /tmp/konasute_sdvx
     curl --output "sdvx_installer.msi" "$address"
-    msiextract ./sdvx_installer.msi > /dev/null
-    mv ./Games ~/Games
-    cd ~
+    msiextract ./sdvx_installer.msi &> /dev/null
+    mv ./Games ~
+    mkdir "~/Games/SOUND VOLTEX EXCEED GEAR/Resource"
     rm -rf /tmp/konasute_sdvx
+}
+
+function registerDMO() {
+    cp ./x64/* $WINEPREFIX/drive_c/windows/syswow64/
+    cp ./x86/* $WINEPREFIX/drive_c/windows/system32/
+    wine regsvr32 dsdmo.dll
 }
 
 function setupWinePrefix() {
@@ -64,6 +70,9 @@ function setupWinePrefix() {
     echo "Setting up Wine prefix."
     echo "=============================================="
     winetricks d3dcompiler_42 d3dcompiler_43 d3dcompiler_46 d3dcompiler_47 dxvk vcrun2010 cjkfonts sound=alsa
+    
+    registerDMO
+
     cd ~
     echo "Windows Registry Editor Version 5.00
 
@@ -154,8 +163,8 @@ function outro() {
 
 intro
 installTools
-downloadKonasute
 setupWinePrefix
+downloadKonasute
 setupDesktopFile
 setupPipewire
 outro
