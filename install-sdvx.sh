@@ -56,7 +56,7 @@ function downloadKonasute() {
     curl --output "sdvx_installer.msi" "$address"
     msiextract ./sdvx_installer.msi &> /dev/null
     mv ./Games ~
-    mkdir "~/Games/SOUND VOLTEX EXCEED GEAR/Resource"
+    mkdir ~/Games/SOUND\ VOLTEX\ EXCEED\ GEAR /Resource
     rm -rf /tmp/konasute_sdvx
 }
 
@@ -77,12 +77,12 @@ function setupWinePrefix() {
     cd ~
     echo "Windows Registry Editor Version 5.00
 
-    [HKEY_LOCAL_MACHINE\\SOFTWARE\\KONAMI]
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\KONAMI]
 
-    [HKEY_LOCAL_MACHINE\\SOFTWARE\\KONAMI\\SOUND VOLTEX EXCEED GEAR]
-    @=\"\"
-    \"InstallDir\"=\"Z:\\\\home\\\\${user}\\\\Games\\\\SOUND VOLTEX EXCEED GEAR\\\\\"
-    \"ResourceDir\"=\"Z:\\\\home\\\\${user}\\\\Games\\\\SOUND VOLTEX EXCEED GEAR\\\\Resource\\\\\"" > registry.reg # what a mess lmao
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\KONAMI\\SOUND VOLTEX EXCEED GEAR]
+@=\"\"
+\"InstallDir\"=\"Z:\\\\home\\\\${user}\\\\Games\\\\SOUND VOLTEX EXCEED GEAR\\\\\"
+\"ResourceDir\"=\"Z:\\\\home\\\\${user}\\\\Games\\\\SOUND VOLTEX EXCEED GEAR\\\\Resource\\\\\"" > registry.reg # what a mess lmao
     wine regedit ./registry.reg
     rm ./registry.reg
 }
@@ -121,29 +121,31 @@ function setupPipewire() {
     default.clock.quantum = 128
 }" > ~/.config/pipewire/pipewire.conf.d/lowlatency.conf
 
-    targetDevice=$(command pw-cli list-objects | awk '/node.name/ {name=$0} /media.class/ && /Audio\/Sink/ {gsub(/.*= "|"/,"",name); print name}')
+    devices=$(command pw-cli list-objects | awk '/node.name/ {name=$0} /media.class/ && /Audio\/Sink/ {gsub(/.*= "|"/,"",name); if (match(name, /konasuteloop/)==0){print name}}');
+
+    targetDevice=${devices[0]};
 
     echo "context.modules = [
-    {
-        name = libpipewire-module-loopback
-        args = {
-            audio.position = [ FL FR ]
-            capture.props = {
-                media.class = Audio/Sink
-                audio.format = S16LE
-                audio.rate = 44100
-                audio.channels = 2
-                node.name = konasuteloop
-                node.description = "Konasute 44100Hz loopback sink"
-            }
-            playback.props = {
-                node.passive = true
-                node.name = konasuteloop.output
-                node.description = \"Konasute 44100Hz loopback output\"
-                target.object = \"${targetDevice}\"
-                audio.format = S16LE
-            }
+{
+    name = libpipewire-module-loopback
+    args = {
+        audio.position = [ FL FR ]
+        capture.props = {
+            media.class = Audio/Sink
+            audio.format = S16LE
+            audio.rate = 44100
+            audio.channels = 2
+            node.name = konasuteloop
+            node.description = \"Konasute 44100Hz loopback sink\"
         }
+        playback.props = {
+            node.passive = true
+            node.name = konasuteloop.output
+            node.description = \"Konasute 44100Hz loopback output\"
+            target.object = \"${targetDevice}\"
+            audio.format = S16LE
+        }
+    }
     }
 ]" > ~/.config/pipewire/pipewire.conf.d/loopback.conf
 
